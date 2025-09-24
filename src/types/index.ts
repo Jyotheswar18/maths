@@ -31,4 +31,10 @@ export interface ScheduleResult {
   slots: Map<number, string[]>;
   totalSlots: number;
   totalConflicts: number;
+  students?: Student[];
+  averageConflictsPerCourse?: number;
+  conflictDetails?: {
+    totalPairs: number;
+    conflictPairsList: string[][];
+  };
 }

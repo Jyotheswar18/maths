@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 // Improved CSV parsing utilities
 function parseStudentCSV(file: File, callback: (text: string) => void) {
   const reader = new FileReader();
@@ -54,7 +53,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PlayCircle, FileText, BookOpen } from 'lucide-react';
+import { PlayCircle, FileText, BookOpen, Search } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 interface InputSectionProps {
   studentData: string;
@@ -65,14 +65,6 @@ interface InputSectionProps {
   isLoading: boolean;
 }
 
-const exampleData = `S1: Math, Physics
-S2: Physics, Chemistry
-S3: Math, CS
-S4: Chemistry, Biology
-S5: CS, Math`;
-
-const exampleCourses = "Math, Physics, Chemistry, CS, Biology";
-
 export function InputSection({
   studentData,
   courseList,
@@ -81,13 +73,7 @@ export function InputSection({
   onGenerate,
   isLoading
 }: InputSectionProps) {
-  const [showExample, setShowExample] = useState(false);
-
-  const loadExample = () => {
-    onStudentDataChange(exampleData);
-    onCourseListChange(exampleCourses);
-    setShowExample(false);
-  };
+  const navigate = useNavigate();
 
   return (
     <motion.div
@@ -98,29 +84,21 @@ export function InputSection({
     >
       <Card className="w-full max-w-3xl mx-auto shadow-2xl border-0 bg-white/90 backdrop-blur-md">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-3xl font-extrabold bg-gradient-to-r from-blue-700 via-purple-600 to-pink-500 bg-clip-text text-transparent drop-shadow-lg">
-            <FileText className="w-7 h-7 text-blue-600" />
+          <CardTitle className="flex items-center gap-2 text-xl font-bold bg-gradient-to-r from-blue-700 via-purple-600 to-pink-500 bg-clip-text text-transparent">
+            <FileText className="w-5 h-5 text-blue-600" />
             <span>Input Data</span>
           </CardTitle>
-          <CardDescription className="text-base text-slate-600">
+          <CardDescription className="text-sm text-slate-600">
             Enter student enrollments and course list to generate exam schedule
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-8">
           <div className="space-y-2">
-            <Label htmlFor="student-data" className="flex items-center gap-2 text-xl font-bold bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              <BookOpen className="w-5 h-5" />
+            <Label htmlFor="student-data" className="flex items-center gap-2 text-lg font-semibold bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+              <BookOpen className="w-4 h-4" />
               Student Enrollments
             </Label>
-            <Textarea
-              id="student-data"
-              placeholder="S1: Math, Physics\nS2: Physics, Chemistry\nS3: Math, CS"
-              value={studentData}
-              onChange={(e) => onStudentDataChange(e.target.value)}
-              rows={6}
-              className="font-mono text-base border-2 border-blue-200 focus:border-blue-400 rounded-lg shadow-sm"
-            />
-            <div className="flex items-center gap-4 mt-2">
+            <div className="flex items-center gap-4 mb-3">
               <label htmlFor="student-csv-upload" className="cursor-pointer px-4 py-2 rounded bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold shadow hover:from-blue-700 hover:to-purple-700 transition">
                 <input
                   id="student-csv-upload"
@@ -136,21 +114,22 @@ export function InputSection({
               </label>
               <span className="text-xs text-blue-700 font-medium">Upload CSV for student enrollments</span>
             </div>
+            <Textarea
+              id="student-data"
+              placeholder="S1: Math, Physics\nS2: Physics, Chemistry\nS3: Math, CS"
+              value={studentData}
+              onChange={(e) => onStudentDataChange(e.target.value)}
+              rows={6}
+              className="font-mono text-base border-2 border-blue-200 focus:border-blue-400 rounded-lg shadow-sm"
+            />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="course-list" className="flex items-center gap-2 text-xl font-bold bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              <BookOpen className="w-5 h-5" />
+            <Label htmlFor="course-list" className="flex items-center gap-2 text-lg font-semibold bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+              <BookOpen className="w-4 h-4" />
               Course List
             </Label>
-            <Input
-              id="course-list"
-              placeholder="Math, Physics, Chemistry, CS"
-              value={courseList}
-              onChange={(e) => onCourseListChange(e.target.value)}
-              className="font-mono text-base border-2 border-blue-200 focus:border-blue-400 rounded-lg shadow-sm"
-            />
-            <div className="flex items-center gap-4 mt-2">
+            <div className="flex items-center gap-4 mb-3">
               <label htmlFor="course-csv-upload" className="cursor-pointer px-4 py-2 rounded bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold shadow hover:from-blue-700 hover:to-purple-700 transition">
                 <input
                   id="course-csv-upload"
@@ -166,24 +145,23 @@ export function InputSection({
               </label>
               <span className="text-xs text-blue-700 font-medium">Upload CSV for course list</span>
             </div>
+            <Input
+              id="course-list"
+              placeholder="Math, Physics, Chemistry, CS"
+              value={courseList}
+              onChange={(e) => onCourseListChange(e.target.value)}
+              className="font-mono text-base border-2 border-blue-200 focus:border-blue-400 rounded-lg shadow-sm"
+            />
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex justify-center">
             <Button
               onClick={onGenerate}
               disabled={isLoading || !studentData.trim() || !courseList.trim()}
-              className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
             >
               <PlayCircle className="w-4 h-4 mr-2" />
               {isLoading ? 'Generating...' : 'Generate Schedule'}
-            </Button>
-            
-            <Button
-              variant="outline"
-              onClick={loadExample}
-              className="flex-1 sm:flex-none"
-            >
-              Load Example
             </Button>
           </div>
         </CardContent>
